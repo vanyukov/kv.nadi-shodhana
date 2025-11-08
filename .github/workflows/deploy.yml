@@ -1,0 +1,48 @@
+name: Deploy to FTP
+
+on:
+  push:
+    branches: [ master, main ]
+
+jobs:
+  deploy:
+    name: Deploy to FTP server
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies (if needed)
+      run: |
+        if [ -f package.json ]; then
+          npm ci
+        fi
+        
+    - name: Build project (if needed)
+      run: |
+        if [ -f package.json ] && npm run | grep -q build; then
+          npm run build
+        fi
+        
+    - name: Deploy to FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: ${{ secrets.FTP_DIR }}
+        local-dir: ./
+        exclude: |
+          **/.git*
+          **/.github*
+          **/node_modules/**
+          **/README.md
+          **/package.json
+          **/package-lock.json
+          **/.gitignore
