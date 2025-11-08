@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажер - Пранаяма - Нади Шодхана</title>
+    <meta name="theme-color" content="#3498db">
+    <meta name="description" content="Таймер для практики Нади Шодхана - пранаяма дыхание">
+    <title>Пранаяма - Нади Шодхана</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png">
+    
     <style>
         * {
             box-sizing: border-box;
@@ -19,6 +31,8 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            /* Для PWA - предотвращает pull-to-refresh на мобильных */
+            overscroll-behavior-y: contain;
         }
         
         .container {
@@ -134,6 +148,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
         }
         
         #startBtn {
@@ -186,9 +201,27 @@
             transition: width 0.5s ease;
         }
         
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            display: none;
+            z-index: 1000;
+        }
+        
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
+                border-radius: 15px;
+                margin: 10px;
             }
             
             .time-left {
@@ -201,6 +234,37 @@
             
             button {
                 width: 100%;
+            }
+            
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+        }
+        
+        /* Стили для полноэкранного режима PWA */
+        @media all and (display-mode: fullscreen) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+                max-width: none;
+            }
+        }
+        
+        @media all and (display-mode: standalone) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+                max-width: none;
             }
         }
     </style>
@@ -270,7 +334,61 @@
         </div>
     </div>
 
+    <button id="installBtn" class="install-btn">Установить приложение</button>
+
     <script>
+        // Service Worker Registration для PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker зарегистрирован успешно: ', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Ошибка регистрации ServiceWorker: ', error);
+                    });
+            });
+        }
+
+        // Обработчик установки PWA
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Предотвращаем автоматическое отображение подсказки
+            e.preventDefault();
+            // Сохраняем событие для использования позже
+            deferredPrompt = e;
+            // Показываем кнопку установки
+            installBtn.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            // Показываем подсказку установки
+            deferredPrompt.prompt();
+            
+            // Ждем ответа пользователя
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                installBtn.style.display = 'none';
+            }
+            
+            // Очищаем сохраненное событие
+            deferredPrompt = null;
+        });
+
+        window.addEventListener('appinstalled', () => {
+            // Скрываем кнопку установки
+            installBtn.style.display = 'none';
+            // Очищаем сохраненное событие
+            deferredPrompt = null;
+            console.log('PWA было установлено');
+        });
+
+        // Основная логика приложения
         document.addEventListener('DOMContentLoaded', function() {
             // Элементы интерфейса
             const startBtn = document.getElementById('startBtn');
@@ -492,10 +610,6 @@
                 currentAction.style.color = '#2c3e50';
                 timeLeft.textContent = '00:00';
                 progressBar.style.width = '100%';
-                
-                // Воспроизводим звук завершения (опционально)
-                // const audio = new Audio('complete-sound.mp3');
-                // audio.play();
             }
             
             // Обработчики событий
