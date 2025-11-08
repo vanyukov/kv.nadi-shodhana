@@ -217,6 +217,24 @@
             z-index: 1000;
         }
         
+        .save-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2ecc71;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .save-indicator.show {
+            opacity: 1;
+        }
+        
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
@@ -240,6 +258,11 @@
                 padding: 10px;
                 align-items: flex-start;
                 padding-top: 20px;
+            }
+            
+            .save-indicator {
+                top: 10px;
+                right: 10px;
             }
         }
         
@@ -335,6 +358,7 @@
     </div>
 
     <button id="installBtn" class="install-btn">Установить приложение</button>
+    <div class="save-indicator" id="saveIndicator">Сохранено</div>
 
     <script>
         // Service Worker Registration для PWA
@@ -398,6 +422,7 @@
             const currentAction = document.getElementById('currentAction');
             const cycleInfo = document.getElementById('cycleInfo');
             const progressBar = document.getElementById('progressBar');
+            const saveIndicator = document.getElementById('saveIndicator');
             
             // Поля ввода
             const inhaleInput = document.getElementById('inhaleInput');
@@ -405,6 +430,68 @@
             const exhaleInput = document.getElementById('exhaleInput');
             const cyclesInput = document.getElementById('cyclesInput');
             
+            // Ключи для localStorage
+            const STORAGE_KEYS = {
+                INHALE: 'pranayama_inhale',
+                HOLD: 'pranayama_hold',
+                EXHALE: 'pranayama_exhale',
+                CYCLES: 'pranayama_cycles'
+            };
+
+            // Сохранение значений в localStorage
+            function saveToLocalStorage() {
+                localStorage.setItem(STORAGE_KEYS.INHALE, inhaleInput.value);
+                localStorage.setItem(STORAGE_KEYS.HOLD, holdInput.value);
+                localStorage.setItem(STORAGE_KEYS.EXHALE, exhaleInput.value);
+                localStorage.setItem(STORAGE_KEYS.CYCLES, cyclesInput.value);
+                
+                // Показываем индикатор сохранения
+                showSaveIndicator();
+            }
+
+            // Загрузка значений из localStorage
+            function loadFromLocalStorage() {
+                const savedInhale = localStorage.getItem(STORAGE_KEYS.INHALE);
+                const savedHold = localStorage.getItem(STORAGE_KEYS.HOLD);
+                const savedExhale = localStorage.getItem(STORAGE_KEYS.EXHALE);
+                const savedCycles = localStorage.getItem(STORAGE_KEYS.CYCLES);
+
+                if (savedInhale) inhaleInput.value = savedInhale;
+                if (savedHold) holdInput.value = savedHold;
+                if (savedExhale) exhaleInput.value = savedExhale;
+                if (savedCycles) cyclesInput.value = savedCycles;
+            }
+
+            // Показать индикатор сохранения
+            function showSaveIndicator() {
+                saveIndicator.classList.add('show');
+                setTimeout(() => {
+                    saveIndicator.classList.remove('show');
+                }, 2000);
+            }
+
+            // Автосохранение при изменении значений
+            function setupAutoSave() {
+                inhaleInput.addEventListener('change', saveToLocalStorage);
+                holdInput.addEventListener('change', saveToLocalStorage);
+                exhaleInput.addEventListener('change', saveToLocalStorage);
+                cyclesInput.addEventListener('change', saveToLocalStorage);
+                
+                // Также сохраняем при вводе (с задержкой)
+                let saveTimeout;
+                [inhaleInput, holdInput, exhaleInput, cyclesInput].forEach(input => {
+                    input.addEventListener('input', () => {
+                        clearTimeout(saveTimeout);
+                        saveTimeout = setTimeout(saveToLocalStorage, 1000);
+                    });
+                });
+            }
+
+            // Загружаем сохраненные значения при запуске
+            loadFromLocalStorage();
+            // Настраиваем автосохранение
+            setupAutoSave();
+
             // Переменные таймера
             let timer;
             let isRunning = false;
@@ -625,11 +712,13 @@
                 } else if (value > max) {
                     input.value = max;
                 }
+                // Сохраняем после валидации
+                saveToLocalStorage();
             }
             
-            inhaleInput.addEventListener('change', () => validateInput(inhaleInput, 1, 60));
-            holdInput.addEventListener('change', () => validateInput(holdInput, 0, 60));
-            exhaleInput.addEventListener('change', () => validateInput(exhaleInput, 1, 60));
+            inhaleInput.addEventListener('change', () => validateInput(inhaleInput, 1, 999));
+            holdInput.addEventListener('change', () => validateInput(holdInput, 0, 999));
+            exhaleInput.addEventListener('change', () => validateInput(exhaleInput, 1, 999));
             cyclesInput.addEventListener('change', () => validateInput(cyclesInput, 1, 100));
         });
     </script>
