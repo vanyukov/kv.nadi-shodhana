@@ -39,8 +39,10 @@ jobs:
         server-dir: ${{ secrets.FTP_DIR }}
         local-dir: ./
         exclude: |
-          **/.git*
-          **/.github*
+          .git
+          .github
+          .git/**
+          .github/**
           **/node_modules/**
           **/README.md
           **/package.json
