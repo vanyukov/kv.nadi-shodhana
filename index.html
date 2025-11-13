@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#3498db">
     <meta name="description" content="Таймер для практики Нади Шодхана - пранаяма дыхание">
     <title>Пранаяма - Нади Шодхана</title>
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
-    
+
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="icons/icon-192x192.png">
-    
+
     <style>
         * {
             box-sizing: border-box;
@@ -23,7 +24,7 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
@@ -34,7 +35,7 @@
             /* Для PWA - предотвращает pull-to-refresh на мобильных */
             overscroll-behavior-y: contain;
         }
-        
+
         .container {
             background-color: white;
             border-radius: 20px;
@@ -43,34 +44,34 @@
             max-width: 500px;
             padding: 30px;
         }
-        
+
         h1 {
             text-align: center;
             color: #2c3e50;
             margin-bottom: 30px;
             font-weight: 600;
         }
-        
+
         .section {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 25px;
         }
-        
+
         .section-title {
             font-size: 18px;
             color: #3498db;
             margin-bottom: 15px;
             font-weight: 500;
         }
-        
+
         .duration-inputs {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
-        
+
         .duration-input {
             display: flex;
             flex-direction: column;
@@ -83,18 +84,18 @@
             flex: 1;
             min-width: 80px;
         }
-        
+
         .duration-input:focus-within {
             border-color: #3498db;
             background-color: #e3f2fd;
         }
-        
+
         .duration-input label {
             font-size: 14px;
             color: #7f8c8d;
             margin-bottom: 5px;
         }
-        
+
         .duration-input input {
             background: transparent;
             border: none;
@@ -105,44 +106,44 @@
             font-weight: 600;
             color: #2c3e50;
         }
-        
+
         .divider {
             height: 1px;
             background-color: #e0e0e0;
             margin: 20px 0;
         }
-        
+
         .timer-display {
             text-align: center;
             margin: 30px 0;
         }
-        
+
         .current-action {
             font-size: 24px;
             color: #2c3e50;
             margin-bottom: 10px;
             font-weight: 500;
         }
-        
+
         .time-left {
             font-size: 48px;
             font-weight: 700;
             color: #3498db;
             margin: 10px 0;
         }
-        
+
         .cycle-info {
             font-size: 16px;
             color: #7f8c8d;
         }
-        
+
         .controls {
             display: flex;
             justify-content: center;
             gap: 15px;
             margin-top: 20px;
         }
-        
+
         button {
             padding: 12px 25px;
             border: none;
@@ -153,57 +154,57 @@
             transition: all 0.3s ease;
             -webkit-tap-highlight-color: transparent;
         }
-        
+
         #startBtn {
             background-color: #2ecc71;
             color: white;
         }
-        
+
         #startBtn:hover {
             background-color: #27ae60;
         }
-        
+
         #pauseBtn {
             background-color: #f39c12;
             color: white;
         }
-        
+
         #pauseBtn:hover {
             background-color: #d35400;
         }
-        
+
         #stopBtn {
             background-color: #e74c3c;
             color: white;
         }
-        
+
         #stopBtn:hover {
             background-color: #c0392b;
         }
-        
+
         button:disabled {
             background-color: #bdc3c7;
             cursor: not-allowed;
         }
-        
+
         .progress-container {
             margin-top: 20px;
         }
-        
+
         .progress-bar {
             height: 8px;
             background-color: #ecf0f1;
             border-radius: 4px;
             overflow: hidden;
         }
-        
+
         .progress {
             height: 100%;
             background-color: #3498db;
             width: 0%;
             transition: width 0.5s ease;
         }
-        
+
         .install-btn {
             position: fixed;
             bottom: 20px;
@@ -219,7 +220,7 @@
             display: none;
             z-index: 1000;
         }
-        
+
         .save-indicator {
             position: fixed;
             top: 20px;
@@ -233,60 +234,60 @@
             transition: opacity 0.3s ease;
             z-index: 1000;
         }
-        
+
         .save-indicator.show {
             opacity: 1;
         }
-        
+
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
                 border-radius: 15px;
                 margin: 10px;
             }
-            
+
             .time-left {
                 font-size: 36px;
             }
-            
+
             .controls {
                 flex-direction: column;
             }
-            
+
             button {
                 width: 100%;
             }
-            
+
             body {
                 padding: 10px;
                 align-items: flex-start;
                 padding-top: 20px;
             }
-            
+
             .save-indicator {
                 top: 10px;
                 right: 10px;
             }
         }
-        
+
         /* Стили для полноэкранного режима PWA */
         @media all and (display-mode: fullscreen) {
             body {
                 padding: 0;
             }
-            
+
             .container {
                 border-radius: 0;
                 min-height: 100vh;
                 max-width: none;
             }
         }
-        
+
         @media all and (display-mode: standalone) {
             body {
                 padding: 0;
             }
-            
+
             .container {
                 border-radius: 0;
                 min-height: 100vh;
@@ -295,10 +296,11 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Пранаяма <br> Нади Шодхана</h1>
-        
+
         <div class="section">
             <div class="section-title">Вдох</div>
             <div class="duration-inputs">
@@ -308,7 +310,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="section">
             <div class="section-title">Задержка</div>
             <div class="duration-inputs">
@@ -318,7 +320,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="section">
             <div class="section-title">Выдох</div>
             <div class="duration-inputs">
@@ -328,7 +330,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="section">
             <div class="section-title">Циклов</div>
             <div class="duration-inputs">
@@ -338,21 +340,21 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="divider"></div>
-        
+
         <div class="timer-display">
             <div class="current-action" id="currentAction">Готов к началу</div>
             <div class="time-left" id="timeLeft">--:--</div>
             <div class="cycle-info" id="cycleInfo">Цикл: 0/0</div>
         </div>
-        
+
         <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
         </div>
-        
+
         <div class="controls">
             <button id="startBtn">Старт</button>
             <button id="pauseBtn" disabled>Пауза</button>
@@ -366,12 +368,12 @@
     <script>
         // Service Worker Registration для PWA
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
+            window.addEventListener('load', function () {
                 navigator.serviceWorker.register('sw.js')
-                    .then(function(registration) {
+                    .then(function (registration) {
                         console.log('ServiceWorker зарегистрирован успешно: ', registration.scope);
                     })
-                    .catch(function(error) {
+                    .catch(function (error) {
                         console.log('Ошибка регистрации ServiceWorker: ', error);
                     });
             });
@@ -392,17 +394,17 @@
 
         installBtn.addEventListener('click', async () => {
             if (!deferredPrompt) return;
-            
+
             // Показываем подсказку установки
             deferredPrompt.prompt();
-            
+
             // Ждем ответа пользователя
             const { outcome } = await deferredPrompt.userChoice;
-            
+
             if (outcome === 'accepted') {
                 installBtn.style.display = 'none';
             }
-            
+
             // Очищаем сохраненное событие
             deferredPrompt = null;
         });
@@ -416,7 +418,7 @@
         });
 
         // Основная логика приложения
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Элементы интерфейса
             const startBtn = document.getElementById('startBtn');
             const pauseBtn = document.getElementById('pauseBtn');
@@ -426,13 +428,13 @@
             const cycleInfo = document.getElementById('cycleInfo');
             const progressBar = document.getElementById('progressBar');
             const saveIndicator = document.getElementById('saveIndicator');
-            
+
             // Поля ввода
             const inhaleInput = document.getElementById('inhaleInput');
             const holdInput = document.getElementById('holdInput');
             const exhaleInput = document.getElementById('exhaleInput');
             const cyclesInput = document.getElementById('cyclesInput');
-            
+
             // Ключи для localStorage
             const STORAGE_KEYS = {
                 INHALE: 'pranayama_inhale',
@@ -447,7 +449,7 @@
                 localStorage.setItem(STORAGE_KEYS.HOLD, holdInput.value);
                 localStorage.setItem(STORAGE_KEYS.EXHALE, exhaleInput.value);
                 localStorage.setItem(STORAGE_KEYS.CYCLES, cyclesInput.value);
-                
+
                 // Показываем индикатор сохранения
                 showSaveIndicator();
             }
@@ -479,7 +481,7 @@
                 holdInput.addEventListener('change', saveToLocalStorage);
                 exhaleInput.addEventListener('change', saveToLocalStorage);
                 cyclesInput.addEventListener('change', saveToLocalStorage);
-                
+
                 // Также сохраняем при вводе (с задержкой)
                 let saveTimeout;
                 [inhaleInput, holdInput, exhaleInput, cyclesInput].forEach(input => {
@@ -504,7 +506,7 @@
             let totalCycles = 0;
             let phaseTimeLeft = 0;
             let totalPhaseTime = 0;
-            
+
             // Получение значений длительности фаз
             function getPhaseDurations() {
                 return {
@@ -514,64 +516,64 @@
                     cycles: parseInt(cyclesInput.value) || 10
                 };
             }
-            
+
             // Запуск таймера
             function startTimer() {
                 if (isRunning) return;
-                
+
                 const durations = getPhaseDurations();
                 currentCycle = 1;
                 totalCycles = durations.cycles;
-                
+
                 isRunning = true;
                 isPaused = false;
-                
+
                 startBtn.disabled = true;
                 pauseBtn.disabled = false;
                 stopBtn.disabled = false;
-                
+
                 // Блокируем поля ввода во время работы таймера
                 inhaleInput.disabled = true;
                 holdInput.disabled = true;
                 exhaleInput.disabled = true;
                 cyclesInput.disabled = true;
-                
+
                 // Начинаем с вдоха
                 startPhase('inhale', durations.inhale);
             }
-            
+
             // Запуск фазы дыхания
             function startPhase(phase, duration) {
                 currentPhase = phase;
                 phaseTimeLeft = duration;
                 totalPhaseTime = duration;
-                
+
                 // Обновляем отображение
                 updateDisplay();
-                
+
                 // Запускаем обратный отсчет
                 timer = setInterval(updateTimer, 1000);
             }
-            
+
             // Обновление таймера
             function updateTimer() {
                 phaseTimeLeft--;
-                
+
                 // Обновляем отображение
                 updateDisplay();
-                
+
                 // Проверяем, закончилась ли фаза
                 if (phaseTimeLeft <= 0) {
                     clearInterval(timer);
                     nextPhase();
                 }
             }
-            
+
             // Переход к следующей фазе
             function nextPhase() {
                 const durations = getPhaseDurations();
-                
-                switch(currentPhase) {
+
+                switch (currentPhase) {
                     case 'inhale':
                         if (durations.hold > 0) {
                             startPhase('hold', durations.hold);
@@ -593,16 +595,16 @@
                         break;
                 }
             }
-            
+
             // Обновление отображения
             function updateDisplay() {
                 // Отображаем оставшееся время
                 timeLeft.textContent = formatTime(phaseTimeLeft);
-                
+
                 // Отображаем текущее действие
                 let actionText = '';
                 let actionColor = '';
-                switch(currentPhase) {
+                switch (currentPhase) {
                     case 'inhale':
                         actionText = 'Вдох';
                         actionColor = '#2ecc71';
@@ -619,27 +621,27 @@
                 currentAction.textContent = actionText;
                 currentAction.style.color = actionColor;
                 timeLeft.style.color = actionColor;
-                
+
                 // Отображаем информацию о цикле
                 cycleInfo.textContent = `Цикл: ${currentCycle}/${totalCycles}`;
-                
+
                 // Обновляем прогресс-бар
                 const progress = ((totalPhaseTime - phaseTimeLeft) / totalPhaseTime) * 100;
                 progressBar.style.width = `${progress}%`;
                 progressBar.style.backgroundColor = actionColor;
             }
-            
+
             // Форматирование времени (секунды в мм:сс)
             function formatTime(seconds) {
                 const mins = Math.floor(seconds / 60);
                 const secs = seconds % 60;
                 return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             }
-            
+
             // Пауза таймера
             function pauseTimer() {
                 if (!isRunning) return;
-                
+
                 if (isPaused) {
                     // Возобновление
                     timer = setInterval(updateTimer, 1000);
@@ -649,27 +651,27 @@
                     clearInterval(timer);
                     pauseBtn.textContent = 'Продолжить';
                 }
-                
+
                 isPaused = !isPaused;
             }
-            
+
             // Остановка таймера
             function stopTimer() {
                 clearInterval(timer);
                 isRunning = false;
                 isPaused = false;
-                
+
                 startBtn.disabled = false;
                 pauseBtn.disabled = true;
                 stopBtn.disabled = true;
                 pauseBtn.textContent = 'Пауза';
-                
+
                 // Разблокируем поля ввода
                 inhaleInput.disabled = false;
                 holdInput.disabled = false;
                 exhaleInput.disabled = false;
                 cyclesInput.disabled = false;
-                
+
                 // Сброс отображения
                 timeLeft.textContent = '--:--';
                 currentAction.textContent = 'Готов к началу';
@@ -679,34 +681,34 @@
                 progressBar.style.width = '0%';
                 progressBar.style.backgroundColor = '#3498db';
             }
-            
+
             // Завершение практики
             function finishPractice() {
                 clearInterval(timer);
                 isRunning = false;
                 isPaused = false;
-                
+
                 startBtn.disabled = false;
                 pauseBtn.disabled = true;
                 stopBtn.disabled = true;
-                
+
                 // Разблокируем поля ввода
                 inhaleInput.disabled = false;
                 holdInput.disabled = false;
                 exhaleInput.disabled = false;
                 cyclesInput.disabled = false;
-                
+
                 currentAction.textContent = 'Практика завершена!';
                 currentAction.style.color = '#2c3e50';
                 timeLeft.textContent = '00:00';
                 progressBar.style.width = '100%';
             }
-            
+
             // Обработчики событий
             startBtn.addEventListener('click', startTimer);
             pauseBtn.addEventListener('click', pauseTimer);
             stopBtn.addEventListener('click', stopTimer);
-            
+
             // Валидация полей ввода
             function validateInput(input, min, max) {
                 let value = parseInt(input.value);
@@ -718,7 +720,7 @@
                 // Сохраняем после валидации
                 saveToLocalStorage();
             }
-            
+
             inhaleInput.addEventListener('change', () => validateInput(inhaleInput, 1, 999));
             holdInput.addEventListener('change', () => validateInput(holdInput, 0, 999));
             exhaleInput.addEventListener('change', () => validateInput(exhaleInput, 1, 999));
@@ -726,4 +728,5 @@
         });
     </script>
 </body>
+
 </html>
