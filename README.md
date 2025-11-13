@@ -25,7 +25,7 @@ PWA-приложение для практики дыхательной техн
 
 `bash`
 ```
-git clone https://github.com/your-username/pranayama-timer.git
+git clone https://github.com/vanyukov/kv.nadi-shodhana.git
 ```
 Откройте index.html в браузере или используйте Live Server.
 
