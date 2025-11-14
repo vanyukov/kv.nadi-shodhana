@@ -2,6 +2,7 @@ const CACHE_NAME = 'pranayama-timer-v1';
 const urlsToCache = [
   '/',
   '/index.html',
+  '/stats.html',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png'
 ];
