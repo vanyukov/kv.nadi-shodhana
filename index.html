@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#3498db">
     <meta name="description" content="Таймер для практики Нади Шодхана - пранаяма дыхание">
     <title>Пранаяма - Нади Шодхана</title>
 
@@ -45,17 +44,63 @@
             padding: 30px;
         }
 
-        h1 {
+        .header {
             text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
             color: #2c3e50;
-            margin-bottom: 30px;
+            margin-bottom: 5px;
             font-weight: 600;
         }
 
-        .section {
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        /* Стили для навигации */
+        .nav-buttons {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+            max-width: 150px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .nav-btn.active {
+            background: #2c3e50;
+        }
+
+        .nav-btn.active:hover {
+            background: #2c3e50;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .section {
             margin-bottom: 25px;
         }
 
@@ -70,7 +115,6 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            width: 50%;
         }
 
         .duration-input {
@@ -259,6 +303,16 @@
                 width: 100%;
             }
 
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .nav-btn {
+                max-width: 200px;
+                width: 100%;
+            }
+
             body {
                 padding: 10px;
                 align-items: flex-start;
@@ -300,7 +354,16 @@
 
 <body>
     <div class="container">
-        <h1>Пранаяма <br> Нади Шодхана</h1>
+        <div class="header">
+            <h1>Пранаяма <br> Нади Шодхана</h1>
+            <p class="subtitle">Альтернативное дыхание для баланса энергии</p>
+        </div>
+
+        <!-- Навигация -->
+        <div class="nav-buttons">
+            <a href="/" class="nav-btn active">🧘 Таймер</a>
+            <a href="/stats.html" class="nav-btn">📊 Статистика</a>
+        </div>
 
         <div class="section">
             <div class="section-title">Вдох</div>
@@ -445,6 +508,35 @@
                 HISTORY: 'pranayama_history'
             };
 
+            // Функция сохранения истории тренировок
+            function savePracticeHistory(durations, totalDuration) {
+                const history = JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY) || '[]');
+
+                const session = {
+                    timestamp: new Date().toISOString(),
+                    inhale: durations.inhale,
+                    hold: durations.hold,
+                    exhale: durations.exhale,
+                    cycles: durations.cycles,
+                    totalDuration: totalDuration
+                };
+
+                history.push(session);
+
+                // Сохраняем только последние 100 записей
+                if (history.length > 100) {
+                    history.splice(0, history.length - 100);
+                }
+
+                localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
+            }
+
+            // Расчет общей длительности тренировки
+            function calculateTotalDuration(durations) {
+                const cycleTime = durations.inhale + durations.hold + durations.exhale;
+                return cycleTime * durations.cycles;
+            }
+
             // Сохранение значений в localStorage
             function saveToLocalStorage() {
                 localStorage.setItem(STORAGE_KEYS.INHALE, inhaleInput.value);
@@ -454,19 +546,6 @@
 
                 // Показываем индикатор сохранения
                 showSaveIndicator();
-            }
-
-            // Функция для сохранения истории тренировок
-            function savePracticeHistory(duration) {
-                const history = JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY)) || [];
-
-                const newEntry = {
-                    date: new Date().toLocaleString(),
-                    duration: formatTime(duration)
-                };
-
-                history.push(newEntry);
-                localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
             }
 
             // Загрузка значений из localStorage
@@ -713,16 +792,15 @@
                 exhaleInput.disabled = false;
                 cyclesInput.disabled = false;
 
+                // Сохраняем историю тренировки
+                const durations = getPhaseDurations();
+                const totalDuration = calculateTotalDuration(durations);
+                savePracticeHistory(durations, totalDuration);
+
                 currentAction.textContent = 'Практика завершена!';
                 currentAction.style.color = '#2c3e50';
                 timeLeft.textContent = '00:00';
                 progressBar.style.width = '100%';
-
-                // Сохраняем историю тренировки
-                const durations = getPhaseDurations();
-                const totalDuration = (durations.inhale + durations.hold + durations.exhale) * durations.cycles;
-                savePracticeHistory(totalDuration);
-
             }
 
             // Обработчики событий
