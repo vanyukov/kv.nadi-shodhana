@@ -441,7 +441,8 @@
                 INHALE: 'pranayama_inhale',
                 HOLD: 'pranayama_hold',
                 EXHALE: 'pranayama_exhale',
-                CYCLES: 'pranayama_cycles'
+                CYCLES: 'pranayama_cycles',
+                HISTORY: 'pranayama_history'
             };
 
             // Сохранение значений в localStorage
@@ -453,6 +454,19 @@
 
                 // Показываем индикатор сохранения
                 showSaveIndicator();
+            }
+
+            // Функция для сохранения истории тренировок
+            function savePracticeHistory(duration) {
+                const history = JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY)) || [];
+
+                const newEntry = {
+                    date: new Date().toLocaleString(),
+                    duration: formatTime(duration)
+                };
+
+                history.push(newEntry);
+                localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
             }
 
             // Загрузка значений из localStorage
@@ -703,6 +717,12 @@
                 currentAction.style.color = '#2c3e50';
                 timeLeft.textContent = '00:00';
                 progressBar.style.width = '100%';
+
+                // Сохраняем историю тренировки
+                const durations = getPhaseDurations();
+                const totalDuration = (durations.inhale + durations.hold + durations.exhale) * durations.cycles;
+                savePracticeHistory(totalDuration);
+
             }
 
             // Обработчики событий
