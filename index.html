@@ -363,6 +363,34 @@
             <h1>Пранаяма <br> Нади Шодхана</h1>
         </div>
 
+        <div class="timer-display">
+            <div class="current-action" id="currentAction">Готов к началу</div>
+            <div class="time-left" id="timeLeft">--:--</div>
+            <div class="cycle-info" id="cycleInfo">Цикл: 0/0</div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn">Старт</button>
+            <button id="pauseBtn" disabled>Пауза</button>
+            <button id="stopBtn" disabled>Стоп</button>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="/stats.html" class="nav-btn">📊 Статистика</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="header">
+            <h2>Настройки</h2>
+        </div>
+
         <div class="section">
             <div class="section-title">Вдох</div>
             <div class="duration-inputs">
@@ -401,30 +429,6 @@
                     <input type="number" id="cyclesInput" min="1" max="100" value="24">
                 </div>
             </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="timer-display">
-            <div class="current-action" id="currentAction">Готов к началу</div>
-            <div class="time-left" id="timeLeft">--:--</div>
-            <div class="cycle-info" id="cycleInfo">Цикл: 0/0</div>
-        </div>
-
-        <div class="progress-container">
-            <div class="progress-bar">
-                <div class="progress" id="progressBar"></div>
-            </div>
-        </div>
-
-        <div class="controls">
-            <button id="startBtn">Старт</button>
-            <button id="pauseBtn" disabled>Пауза</button>
-            <button id="stopBtn" disabled>Стоп</button>
-        </div>
-
-        <div class="nav-buttons">
-            <a href="/stats.html" class="nav-btn">📊 Статистика</a>
         </div>
 
     </div>
