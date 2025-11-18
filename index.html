@@ -194,6 +194,12 @@
             margin-top: 20px;
         }
 
+        .controls__line {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
         button {
             padding: 12px 25px;
             border: none;
@@ -377,8 +383,10 @@
 
         <div class="controls">
             <button id="startBtn">Старт</button>
-            <button id="pauseBtn" disabled>Пауза</button>
-            <button id="stopBtn" disabled>Стоп</button>
+            <div class="controls__line">
+                <button id="pauseBtn" disabled>Пауза</button>
+                <button id="stopBtn" disabled>Стоп</button>
+            </div>
         </div>
 
         <div class="nav-buttons">
