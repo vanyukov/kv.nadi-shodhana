@@ -439,6 +439,17 @@
             </div>
         </div>
 
+        <div class="section">
+            <div class="section-title">Звук</div>
+            <div class="duration-inputs">
+                <div class="duration-input">
+                    <label>
+                        <input type="checkbox" id="muteInput">
+                        Отключить звук
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 
     <button id="installBtn" class="install-btn">Установить приложение</button>
@@ -513,6 +524,7 @@
             const holdInput = document.getElementById('holdInput');
             const exhaleInput = document.getElementById('exhaleInput');
             const cyclesInput = document.getElementById('cyclesInput');
+            const muteInput = document.getElementById('muteInput');
 
             // Ключи для localStorage
             const STORAGE_KEYS = {
@@ -520,7 +532,8 @@
                 HOLD: 'pranayama_hold',
                 EXHALE: 'pranayama_exhale',
                 CYCLES: 'pranayama_cycles',
-                HISTORY: 'pranayama_history'
+                HISTORY: 'pranayama_history',
+                MUTE: 'pranayama_mute'
             };
 
             // Функция сохранения истории тренировок
@@ -558,6 +571,7 @@
                 localStorage.setItem(STORAGE_KEYS.HOLD, holdInput.value);
                 localStorage.setItem(STORAGE_KEYS.EXHALE, exhaleInput.value);
                 localStorage.setItem(STORAGE_KEYS.CYCLES, cyclesInput.value);
+                localStorage.setItem(STORAGE_KEYS.MUTE, muteInput.checked);
 
                 // Показываем индикатор сохранения
                 showSaveIndicator();
@@ -569,11 +583,13 @@
                 const savedHold = localStorage.getItem(STORAGE_KEYS.HOLD);
                 const savedExhale = localStorage.getItem(STORAGE_KEYS.EXHALE);
                 const savedCycles = localStorage.getItem(STORAGE_KEYS.CYCLES);
+                const muteState = localStorage.getItem(STORAGE_KEYS.MUTE);
 
                 if (savedInhale) inhaleInput.value = savedInhale;
                 if (savedHold) holdInput.value = savedHold;
                 if (savedExhale) exhaleInput.value = savedExhale;
                 if (savedCycles) cyclesInput.value = savedCycles;
+                muteInput.checked = muteState === 'true';
             }
 
             // Показать индикатор сохранения
@@ -590,6 +606,7 @@
                 holdInput.addEventListener('change', saveToLocalStorage);
                 exhaleInput.addEventListener('change', saveToLocalStorage);
                 cyclesInput.addEventListener('change', saveToLocalStorage);
+                muteInput.addEventListener('change', saveToLocalStorage);
 
                 // Также сохраняем при вводе (с задержкой)
                 let saveTimeout;
@@ -646,6 +663,7 @@
                 holdInput.disabled = true;
                 exhaleInput.disabled = true;
                 cyclesInput.disabled = true;
+                muteInput.disabled = true;
 
                 // Начинаем с вдоха
                 startPhase('inhale', durations.inhale);
@@ -788,6 +806,7 @@
                 holdInput.disabled = false;
                 exhaleInput.disabled = false;
                 cyclesInput.disabled = false;
+                muteInput.disabled = false;
 
                 // Сброс отображения
                 timeLeft.textContent = '--:--';
@@ -814,6 +833,7 @@
                 holdInput.disabled = false;
                 exhaleInput.disabled = false;
                 cyclesInput.disabled = false;
+                muteInput.disabled = false;
 
                 // Сохраняем историю тренировки
                 const durations = getPhaseDurations();
@@ -847,9 +867,14 @@
             holdInput.addEventListener('change', () => validateInput(holdInput, 0, 999));
             exhaleInput.addEventListener('change', () => validateInput(exhaleInput, 1, 999));
             cyclesInput.addEventListener('change', () => validateInput(cyclesInput, 1, 100));
+            muteInput.addEventListener('change', () => { saveToLocalStorage(); });
 
-            // --------- Текст‑в‑говор ------------------------------------
+            /* ==================== Функции работы со звуком ==================== */
             function speak(text) {
+                if (muteInput.checked) {
+                    return
+                }
+
                 if (!('speechSynthesis' in window)) return;
                 const utter = new SpeechSynthesisUtterance(text);
                 utter.lang = 'ru-RU';
@@ -869,18 +894,11 @@
             }
 
             function speakCurrentAction() {
-                let actionText;
-                switch (currentPhase) {
-                    case 'inhale':
-                        actionText = 'Вдох';
-                        break;
-                    case 'hold':
-                        actionText = 'Задержка';
-                        break;
-                    case 'exhale':
-                        actionText = 'Выдох';
-                        break;
-                }
+                const actionText = {
+                    inhale: 'Вдох',
+                    hold: 'Задержка',
+                    exhale: 'Выдох'
+                }[currentPhase];
                 speak(actionText);
             }
         });
