@@ -660,6 +660,9 @@
                 // Обновляем отображение
                 updateDisplay();
 
+                // ОЗУЧИВАНИЕ названия нового шага
+                speakCurrentAction();
+
                 // Запускаем обратный отсчет
                 timer = setInterval(updateTimer, 1000);
             }
@@ -670,6 +673,11 @@
 
                 // Обновляем отображение
                 updateDisplay();
+
+                // Озвучиваем последние 3 секунды
+                if (phaseTimeLeft <= 3 && phaseTimeLeft > 0) {
+                    speakNumber(phaseTimeLeft);
+                }
 
                 // Проверяем, закончилась ли фаза
                 if (phaseTimeLeft <= 0) {
@@ -839,6 +847,42 @@
             holdInput.addEventListener('change', () => validateInput(holdInput, 0, 999));
             exhaleInput.addEventListener('change', () => validateInput(exhaleInput, 1, 999));
             cyclesInput.addEventListener('change', () => validateInput(cyclesInput, 1, 100));
+
+            // --------- Текст‑в‑говор ------------------------------------
+            function speak(text) {
+                if (!('speechSynthesis' in window)) return;
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'ru-RU';
+                utter.rate = 1;          // нормальная скорость
+                speechSynthesis.speak(utter);
+            }
+
+            const RU_NUMBERS = {
+                1: 'Один',
+                2: 'Два',
+                3: 'Три'
+            };
+
+            function speakNumber(seconds) {
+                const word = RU_NUMBERS[seconds];
+                speak(word || seconds.toString());
+            }
+
+            function speakCurrentAction() {
+                let actionText;
+                switch (currentPhase) {
+                    case 'inhale':
+                        actionText = 'Вдох';
+                        break;
+                    case 'hold':
+                        actionText = 'Задержка';
+                        break;
+                    case 'exhale':
+                        actionText = 'Выдох';
+                        break;
+                }
+                speak(actionText);
+            }
         });
     </script>
 </body>
