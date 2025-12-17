@@ -641,7 +641,7 @@
                     }, 50);
 
                 } catch (e) {
-                    console.log("Ошибка при разогреве SpeechSynthesis:", e);
+                    console.error("Ошибка при разогреве SpeechSynthesis:", e);
                 }
             }
             warmUpSpeechSynthesis();
@@ -872,6 +872,7 @@
                 currentAction.style.color = '#2c3e50';
                 timeLeft.textContent = '00:00';
                 progressBar.style.width = '100%';
+                speak(currentAction.textContent);
             }
 
             // Обработчики событий
