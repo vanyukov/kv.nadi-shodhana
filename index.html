@@ -618,6 +618,34 @@
                 });
             }
 
+            // Переменная для отслеживания разогрева синтезатора
+            let isSpeechWarmedUp = false;
+
+            // Функция разогрева синтезатора речи
+            function warmUpSpeechSynthesis() {
+                if (isSpeechWarmedUp || !window.speechSynthesis) return;
+
+                try {
+                    const testUtterance = new SpeechSynthesisUtterance('');
+                    testUtterance.volume = 0;
+                    testUtterance.text = ' ';
+
+                    window.speechSynthesis.speak(testUtterance);
+
+                    setTimeout(() => {
+                        if (window.speechSynthesis.speaking) {
+                            window.speechSynthesis.cancel();
+                        }
+                        isSpeechWarmedUp = true;
+                        console.log("SpeechSynthesis разогрет");
+                    }, 50);
+
+                } catch (e) {
+                    console.log("Ошибка при разогреве SpeechSynthesis:", e);
+                }
+            }
+            warmUpSpeechSynthesis();
+
             // Загружаем сохраненные значения при запуске
             loadFromLocalStorage();
             // Настраиваем автосохранение
