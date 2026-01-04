@@ -456,16 +456,57 @@
     <div class="save-indicator" id="saveIndicator">Сохранено</div>
 
     <script>
-        // Service Worker Registration для PWA
+        // Service Worker Registration для PWA с проверкой обновлений
         if ('serviceWorker' in navigator) {
+            let refreshing = false;
+            let registration = null;
+
+            const checkForUpdates = function() {
+                if (registration) {
+                    registration.update();
+                }
+            };
+
             window.addEventListener('load', function () {
                 navigator.serviceWorker.register('sw.js')
-                    .then(function (registration) {
-                        console.log('ServiceWorker зарегистрирован успешно: ', registration.scope);
+                    .then(function (reg) {
+                        registration = reg;
+                        console.log('ServiceWorker зарегистрирован успешно: ', reg.scope);
+
+                        // Проверяем обновления при загрузке страницы
+                        checkForUpdates();
+
+                        // Проверяем обновления при фокусе на окне
+                        window.addEventListener('focus', checkForUpdates);
+
+                        // Обработчик обновления Service Worker
+                        reg.addEventListener('updatefound', function() {
+                            const newWorker = reg.installing;
+
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Новый SW установлен, но старый всё ещё активен
+                                    // Обновляем принудительно
+                                    if (!refreshing) {
+                                        refreshing = true;
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
                     })
                     .catch(function (error) {
                         console.log('Ошибка регистрации ServiceWorker: ', error);
                     });
+
+                // Обработчик события контроллера - когда новый SW берёт контроль
+                navigator.serviceWorker.addEventListener('controllerchange', function() {
+                    if (!refreshing) {
+                        refreshing = true;
+                        window.location.reload();
+                    }
+                });
             });
         }
 
