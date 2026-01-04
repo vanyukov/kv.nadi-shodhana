@@ -43,9 +43,26 @@ self.addEventListener('activate', function(event) {
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request).then(function(cachedResponse) {
-      // Запускаем обновление в фоне, не блокируя ответ
-      const fetchPromise = fetch(event.request).then(function(networkResponse) {
-        // Обновляем кэш с новой версией, если ответ успешный
+      // Если есть кэш - отдаём сразу, обновление в фоне
+      if (cachedResponse) {
+        // Запускаем обновление в фоне, не блокируя ответ
+        fetch(event.request).then(function(networkResponse) {
+          // Обновляем кэш с новой версией, если ответ успешный
+          if (networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(function(cache) {
+              cache.put(event.request, responseToCache);
+            });
+          }
+        }).catch(function() {
+          // Игнорируем ошибки сети, так как уже вернули кэш
+        });
+        return cachedResponse;
+      }
+
+      // Если кэша нет - ждём ответ из сети
+      return fetch(event.request).then(function(networkResponse) {
+        // Кэшируем успешные ответы
         if (networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then(function(cache) {
@@ -53,19 +70,7 @@ self.addEventListener('fetch', function(event) {
           });
         }
         return networkResponse;
-      }).catch(function() {
-        // Игнорируем ошибки сети, если есть кэш
       });
-
-      // Если есть кэш - отдаём сразу, обновление идёт в фоне
-      if (cachedResponse) {
-        // Обновление в фоне не блокирует ответ
-        fetchPromise.catch(function() {});
-        return cachedResponse;
-      }
-
-      // Если кэша нет - ждём ответ из сети
-      return fetchPromise;
     })
   );
 });
