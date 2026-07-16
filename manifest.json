@@ -2,6 +2,8 @@
   "name": "Пранаяма Таймер",
   "short_name": "Пранаяма",
   "description": "Таймер для практики Нади Шодхана - дыхательная техника йоги",
+  "id": "./",
+  "scope": "./",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f5f7fa",
