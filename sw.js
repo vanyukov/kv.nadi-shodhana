@@ -1,10 +1,10 @@
 const CACHE_NAME = 'pranayama-timer-v2';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/stats.html',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  './',
+  './index.html',
+  './stats.html',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png'
 ];
 
 // Установка Service Worker - обновляем при каждой установке

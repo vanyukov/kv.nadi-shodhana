@@ -390,7 +390,7 @@
         </div>
 
         <div class="nav-buttons">
-            <a href="/stats.html" class="nav-btn">📊 Статистика</a>
+            <a href="./stats.html" class="nav-btn">📊 Статистика</a>
         </div>
 
         <div class="divider"></div>
@@ -468,7 +468,7 @@
             };
 
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('sw.js')
+                navigator.serviceWorker.register('./sw.js')
                     .then(function (reg) {
                         registration = reg;
                         console.log('ServiceWorker зарегистрирован успешно: ', reg.scope);
