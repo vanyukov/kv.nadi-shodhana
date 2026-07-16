@@ -18,14 +18,14 @@ PWA-приложение для практики дыхательной техн
 
 ## 🚀 Быстрый старт
 Онлайн версия
-Откройте [GitHub Pages](https://vanyukov.github.io/nadi-shodhana/) в браузере и установите как PWA.
+Откройте [nadi-shodhana](https://vanyukov.github.io/kv.nadi-shodhana/) в браузере и установите как PWA.
 
 Локальная установка
 Клонируйте репозиторий:
 
 `bash`
 ```
-git clone https://github.com/vanyukov/nadi-shodhana.git
+git clone https://github.com/vanyukov/kv.nadi-shodhana.git
 ```
 Откройте index.html в браузере или используйте Live Server.
 
